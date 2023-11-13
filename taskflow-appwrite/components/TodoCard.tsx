@@ -21,7 +21,7 @@ function TodoCard({todo, index, id, innerRef, draggableProps, dragHandleProps}:P
         ref={innerRef}
         className="bg-white rounded-md space-y-2 drop-shadow-md"
     >
-        <div className="felx justify-between items-center p-5">
+        <div className="flex justify-between items-center p-5">
           <p>{todo.title}</p>
           <button className="text-red-500 hover:text-red-600">
             <XCircleIcon 
