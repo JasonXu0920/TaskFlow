@@ -4,12 +4,31 @@ import Image from 'next/image'
 import { MagnifyingGlassIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import Avatar from 'react-avatar'
 import { useBoardStore } from '@/store/BoardStore';
+import { useEffect, useState } from 'react';
+import fetchSuggestion from '@/lib/fetchSuggestion';
 
 function Header() {
-  const [searchString, setSearchString] = useBoardStore((state) => [
+  const [board, searchString, setSearchString] = useBoardStore((state) => [
+    state.board,
     state.searchString,
-    state.setSearchString,
-  ])
+    state.setSearchString, 
+  ]);
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [suggestion, setSuggestion] = useState<string>("");
+
+  useEffect(() => {
+    if(board.columns.size === 0) return;
+    setLoading(true);
+
+    const fetchSuggestionFunc = async () => {
+      const suggestion = await fetchSuggestion(board);
+      setSuggestion(suggestion);
+      setLoading(false);
+    }
+
+    fetchSuggestionFunc();
+  }, [board])
 
   return (
     <header>
@@ -52,9 +71,14 @@ function Header() {
                         pr-5 shadow-xl rounded-xl w-fit bg-white 
                         italic max-w-3xl text-[blue]'>
               <UserCircleIcon
-                className='inline-block h-10 w-10 text-[blue] mr-1'
+                className={`inline-block h-10 w-10 text-[blue] mr-1
+                            ${loading && "animate-spin"}
+                          `}
               ></UserCircleIcon>
-              GPT Driven summarizer...
+              { suggestion && !loading
+                ? suggestion
+                :"GPT Driven summarizer..."
+              }
           </p>
         </div>
     </header>
